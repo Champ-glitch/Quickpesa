@@ -3,7 +3,6 @@ import { useUIStore } from '@/stores/uiStore';
 import { useWallet } from '@/hooks/useWallet';
 import { depositChannels } from '@/mocks/gameRounds';
 import { Button } from '@/components/common/Button';
-import { Input } from '@/components/common/Input';
 import { X, ArrowDownLeft, Smartphone, Building2, Bitcoin, Check } from 'lucide-react';
 
 const channelIcons: Record<string, React.ReactNode> = {
@@ -34,7 +33,7 @@ export const DepositModal = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="bg-dark-800 border border-dark-border rounded-t-2xl sm:rounded-2xl w-full max-w-sm max-h-[90vh] overflow-y-auto">
-        <div className="p-4 border-b border-dark-border flex items-center justify-between sticky top-0 bg-dark-800">
+        <div className="p-4 border-b border-dark-border flex items-center justify-between sticky top-0 bg-dark-800 z-10">
           <div className="flex items-center gap-2"><ArrowDownLeft className="w-5 h-5 text-brand-green" /><h2 className="text-base font-bold text-white">Deposit</h2></div>
           <button onClick={() => setShowDepositModal(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
@@ -60,13 +59,18 @@ export const DepositModal = () => {
             </div>
           </div>
 
-          {/* Amount */}
+          {/* Amount - FIXED */}
           <div>
             <label className="text-xs font-medium text-gray-400 mb-2 block">Amount (KSh)</label>
             <div className="relative mb-2">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">KSh</span>
-              <input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))}
-                className="w-full bg-dark-900 border border-dark-border rounded-lg pl-12 pr-4 py-3 text-lg font-bold font-mono text-white focus:outline-none focus:border-brand-green" min={10} />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm z-10">KSh</span>
+              <input 
+                type="number" 
+                value={amount} 
+                onChange={e => setAmount(Number(e.target.value))}
+                className="w-full bg-dark-900 border border-dark-border rounded-lg pl-14 pr-4 py-3 text-lg font-bold font-mono text-white focus:outline-none focus:border-brand-green min-h-[48px]"
+                min={10}
+              />
             </div>
             <div className="grid grid-cols-3 gap-1.5">
               {quickAmounts.map(amt => (
@@ -83,8 +87,20 @@ export const DepositModal = () => {
             )}
           </div>
 
-          {/* Phone */}
-          <Input label="Phone Number" prefix="+" value={phone} onChange={e => setPhone(e.target.value)} placeholder="254712345678" />
+          {/* Phone - FIXED */}
+          <div>
+            <label className="text-xs font-medium text-gray-400 mb-1.5 block">Phone Number</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm z-10">+</span>
+              <input 
+                type="tel" 
+                value={phone} 
+                onChange={e => setPhone(e.target.value)} 
+                placeholder="254712345678"
+                className="w-full bg-dark-900 border border-dark-border rounded-lg pl-9 pr-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-brand-green min-h-[48px]"
+              />
+            </div>
+          </div>
 
           <div className="bg-dark-900 rounded-lg p-3 flex items-start gap-2">
             <Smartphone className="w-4 h-4 text-brand-green mt-0.5 flex-shrink-0" />

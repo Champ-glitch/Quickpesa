@@ -36,7 +36,7 @@ export const CrashGraph = () => {
     ctx.fillRect(0, 0, w, h);
 
     // Grid lines
-    ctx.strokeStyle = 'rgba(42, 52, 65, 0.5)';
+    ctx.strokeStyle = 'rgba(42, 52, 65, 0.4)';
     ctx.lineWidth = 1;
     for (let i = 1; i < 5; i++) {
       const y = (h / 5) * i;
@@ -49,12 +49,15 @@ export const CrashGraph = () => {
 
     if (isBetting) {
       ctx.fillStyle = '#22c55e';
-      ctx.font = 'bold 28px JetBrains Mono';
+      ctx.font = `bold ${Math.min(w * 0.07, 28)}px JetBrains Mono`;
       ctx.textAlign = 'center';
-      ctx.fillText('WAITING FOR NEXT ROUND', w / 2, h / 2 - 10);
-      ctx.font = '16px Inter';
+      const text1 = 'WAITING FOR';
+      const text2 = 'NEXT ROUND';
+      ctx.fillText(text1, w / 2, h / 2 - 8);
+      ctx.fillText(text2, w / 2, h / 2 + 22);
+      ctx.font = `${Math.min(w * 0.035, 14)}px Inter`;
       ctx.fillStyle = '#6b7280';
-      ctx.fillText('Place your bets', w / 2, h / 2 + 25);
+      ctx.fillText('Place your bets', w / 2, h / 2 + 48);
       return;
     }
 
@@ -65,18 +68,18 @@ export const CrashGraph = () => {
 
       for (let t = 0; t <= multiplier; t += 0.05) {
         const progress = t / maxTime;
-        const x = Math.min(progress * w * 0.9, w - 20);
+        const x = Math.min(progress * w * 0.85, w - 30);
         const curveMult = Math.pow(1.02 + t * 0.008, t) + t * 0.05;
-        const y = Math.max(20, h - (curveMult / maxMult) * h * 0.75);
+        const y = Math.max(30, h - (curveMult / maxMult) * h * 0.7);
         if (y > 0 && y < h) points.push({ x, y });
       }
 
       if (points.length > 1) {
-        // Glow
+        // Glow line
         ctx.shadowColor = isCrashed ? '#ef4444' : '#22c55e';
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 12;
         ctx.strokeStyle = isCrashed ? '#ef4444' : '#22c55e';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
@@ -85,36 +88,35 @@ export const CrashGraph = () => {
         ctx.shadowBlur = 0;
 
         // Fill under
-        ctx.fillStyle = isCrashed ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)';
+        ctx.fillStyle = isCrashed ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)';
         ctx.beginPath();
         ctx.moveTo(points[0].x, h);
         for (const p of points) ctx.lineTo(p.x, p.y);
         ctx.lineTo(points[points.length-1].x, h);
         ctx.closePath(); ctx.fill();
 
-        // Dot
+        // Draw airplane at the tip
         const last = points[points.length-1];
-        ctx.fillStyle = isCrashed ? '#ef4444' : '#22c55e';
-        ctx.beginPath(); ctx.arc(last.x, last.y, 5, 0, Math.PI*2); ctx.fill();
+        drawAirplane(ctx, last.x, last.y, isCrashed);
       }
     }
 
     if (isCrashed && currentRound?.crashPoint) {
       ctx.fillStyle = '#ef4444';
-      ctx.font = 'bold 48px JetBrains Mono';
+      ctx.font = `bold ${Math.min(w * 0.1, 40)}px JetBrains Mono`;
       ctx.textAlign = 'center';
-      ctx.fillText('FLEW AWAY', w / 2, h / 2 - 15);
-      ctx.font = 'bold 28px JetBrains Mono';
-      ctx.fillText(`@ ${currentRound.crashPoint.toFixed(2)}x`, w / 2, h / 2 + 30);
+      ctx.fillText('FLEW AWAY', w / 2, h / 2 - 10);
+      ctx.font = `bold ${Math.min(w * 0.07, 24)}px JetBrains Mono`;
+      ctx.fillText(`@ ${currentRound.crashPoint.toFixed(2)}x`, w / 2, h / 2 + 28);
     }
   }, [dims, multiplier, isFlying, isCrashed, isBetting, currentRound]);
 
   return (
-    <div className="relative w-full bg-dark-900 rounded-xl overflow-hidden border border-dark-border" style={{ aspectRatio: '16/10' }}>
+    <div className="relative w-full bg-dark-900 rounded-xl overflow-hidden border border-dark-border" style={{ aspectRatio: '16/11' }}>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         {(isFlying || isCrashed) && (
           <div className={`text-center ${isCrashed ? 'animate-crash-shake' : ''}`}>
-            <span className={`text-5xl font-bold font-mono ${getMultiplierColor(multiplier)}`}>
+            <span className={`text-4xl sm:text-5xl font-bold font-mono ${getMultiplierColor(multiplier)}`}>
               {formatMultiplier(multiplier)}
             </span>
           </div>
@@ -122,7 +124,7 @@ export const CrashGraph = () => {
       </div>
       <canvas ref={canvasRef} style={{ width: dims.w, height: dims.h }} className="absolute inset-0" />
       {currentRound?.serverSeedHash && (
-        <div className="absolute bottom-1 left-2 right-2 flex justify-between text-[9px] text-gray-600 font-mono">
+        <div className="absolute bottom-1 left-2 right-2 flex justify-between text-[9px] text-gray-700 font-mono">
           <span className="truncate">Hash: {currentRound.serverSeedHash}</span>
           <span>#{currentRound.roundNumber}</span>
         </div>
@@ -130,3 +132,52 @@ export const CrashGraph = () => {
     </div>
   );
 };
+
+// Draw a simple airplane icon
+function drawAirplane(ctx: CanvasRenderingContext2D, x: number, y: number, crashed: boolean) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Small rotation based on position
+  const angle = -0.3;
+  ctx.rotate(angle);
+
+  const color = crashed ? '#ef4444' : '#22c55e';
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+
+  // Airplane body
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 12, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Wings
+  ctx.beginPath();
+  ctx.moveTo(-2, -2);
+  ctx.lineTo(2, -2);
+  ctx.lineTo(0, -10);
+  ctx.closePath();
+  ctx.fill();
+
+  // Tail
+  ctx.beginPath();
+  ctx.moveTo(-8, 0);
+  ctx.lineTo(-12, -6);
+  ctx.lineTo(-6, -2);
+  ctx.closePath();
+  ctx.fill();
+
+  // Propeller glow
+  if (!crashed) {
+    ctx.shadowColor = '#22c55e';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(10, 0, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#4ade80';
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  ctx.restore();
+}

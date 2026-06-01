@@ -3,7 +3,6 @@ import { useUIStore } from '@/stores/uiStore';
 import { useUserStore } from '@/stores/userStore';
 import { useWallet } from '@/hooks/useWallet';
 import { Button } from '@/components/common/Button';
-import { Input } from '@/components/common/Input';
 import { X, ArrowUpRight, Wallet } from 'lucide-react';
 
 export const WithdrawModal = () => {
@@ -35,12 +34,20 @@ export const WithdrawModal = () => {
             <div className="flex items-center gap-2"><Wallet className="w-4 h-4 text-brand-green" /><span className="text-xs text-gray-400">Available</span></div>
             <span className="text-lg font-bold font-mono text-white">KSh {maxAmt.toLocaleString()}</span>
           </div>
+
+          {/* Amount - FIXED */}
           <div>
             <label className="text-xs font-medium text-gray-400 mb-2 block">Amount (KSh)</label>
             <div className="relative mb-2">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">KSh</span>
-              <input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))}
-                className="w-full bg-dark-900 border border-dark-border rounded-lg pl-12 pr-4 py-3 text-lg font-bold font-mono text-white focus:outline-none focus:border-brand-green" min={10} max={maxAmt} />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm z-10">KSh</span>
+              <input 
+                type="number" 
+                value={amount} 
+                onChange={e => setAmount(Number(e.target.value))}
+                className="w-full bg-dark-900 border border-dark-border rounded-lg pl-14 pr-4 py-3 text-lg font-bold font-mono text-white focus:outline-none focus:border-brand-green min-h-[48px]"
+                min={10} 
+                max={maxAmt}
+              />
             </div>
             <div className="grid grid-cols-4 gap-1.5">
               {quickAmounts.map(amt => (
@@ -51,7 +58,22 @@ export const WithdrawModal = () => {
               ))}
             </div>
           </div>
-          <Input label="M-Pesa Number" prefix="+" value={phone} onChange={e => setPhone(e.target.value)} placeholder="254712345678" />
+
+          {/* Phone - FIXED */}
+          <div>
+            <label className="text-xs font-medium text-gray-400 mb-1.5 block">M-Pesa Number</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm z-10">+</span>
+              <input 
+                type="tel" 
+                value={phone} 
+                onChange={e => setPhone(e.target.value)} 
+                placeholder="254712345678"
+                className="w-full bg-dark-900 border border-dark-border rounded-lg pl-9 pr-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-brand-green min-h-[48px]"
+              />
+            </div>
+          </div>
+
           <Button variant="primary" size="lg" fullWidth loading={isProcessing} disabled={amount > maxAmt} onClick={handleWithdraw}>
             {isProcessing ? 'Processing...' : `Withdraw KSh ${amount.toLocaleString()}`}
           </Button>

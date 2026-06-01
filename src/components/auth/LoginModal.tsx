@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useUserStore } from '@/stores/userStore';
 import { useUIStore } from '@/stores/uiStore';
 import { Button } from '@/components/common/Button';
-import { Input } from '@/components/common/Input';
 import { mockUser } from '@/mocks/gameRounds';
 import { X, Eye, EyeOff, Phone, Mail } from 'lucide-react';
 
@@ -59,20 +58,69 @@ export const LoginModal = () => {
             </button>
           </div>
 
+          {/* Phone/Email input - FIXED */}
           {loginMethod === 'phone' ? (
-            <Input label="Phone Number" prefix="+" value={phone} onChange={e => setPhone(e.target.value)} placeholder="254712345678" required />
+            <div>
+              <label className="text-xs font-medium text-gray-400 mb-1.5 block">Phone Number</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm z-10">+</span>
+                <input 
+                  type="tel" 
+                  value={phone} 
+                  onChange={e => setPhone(e.target.value)} 
+                  placeholder="254712345678"
+                  className="w-full bg-dark-800 border border-dark-border rounded-lg pl-9 pr-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-brand-green min-h-[48px]"
+                  required
+                />
+              </div>
+            </div>
           ) : (
-            <Input label="Email Address" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required />
+            <div>
+              <label className="text-xs font-medium text-gray-400 mb-1.5 block">Email Address</label>
+              <input 
+                type="email" 
+                value={email} 
+                onChange={e => setEmail(e.target.value)} 
+                placeholder="you@example.com"
+                className="w-full bg-dark-800 border border-dark-border rounded-lg px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-brand-green min-h-[48px]"
+                required
+              />
+            </div>
           )}
 
+          {/* Password - FIXED */}
           <div className="relative">
-            <Input label="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter password" required />
-            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-[34px] text-gray-500">
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+            <label className="text-xs font-medium text-gray-400 mb-1.5 block">Password</label>
+            <div className="relative">
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                placeholder="Enter password"
+                className="w-full bg-dark-800 border border-dark-border rounded-lg px-4 py-3 pr-12 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-brand-green min-h-[48px]"
+                required
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)} 
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
-          {isRegister && <Input label="Confirm Password" type="password" placeholder="Confirm password" required />}
+          {isRegister && (
+            <div>
+              <label className="text-xs font-medium text-gray-400 mb-1.5 block">Confirm Password</label>
+              <input 
+                type="password" 
+                placeholder="Confirm password"
+                className="w-full bg-dark-800 border border-dark-border rounded-lg px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-brand-green min-h-[48px]"
+                required
+              />
+            </div>
+          )}
 
           <Button type="submit" variant="primary" size="lg" fullWidth loading={isLoading}>
             {isRegister ? 'Create Account' : 'Login'}
