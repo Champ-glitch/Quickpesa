@@ -10,6 +10,7 @@ class MockSocketServer {
   private currentMultiplier: number = 1.0;
   private startTime: number = 0;
   private isRunning: boolean = false;
+  private betAmounts: Map<string, number> = new Map();
 
   connect() {
     setTimeout(() => {
@@ -38,7 +39,6 @@ class MockSocketServer {
   }
 
   send(event: string, data: any) {
-    // Handle client messages
     if (event === 'bet:place') {
       this.handlePlaceBet(data);
     } else if (event === 'bet:cashout') {
@@ -137,9 +137,11 @@ class MockSocketServer {
   }
 
   private handlePlaceBet(data: { amount: number; autoCashout?: number }) {
-    // Simulate bet acceptance
+    const betId = `bet_${Date.now()}`;
+    this.betAmounts.set(betId, data.amount);
+
     const bet: Bet = {
-      id: `bet_${Date.now()}`,
+      id: betId,
       userId: 'user_demo',
       username: 'You',
       roundId: this.roundState?.id || '',
@@ -154,10 +156,11 @@ class MockSocketServer {
     this.emit('bet:placed', bet);
   }
 
-  private handleCashout(data: { betId: string }) {
+  private handleCashout(data: { betId: string; amount: number }) {
     if (!this.roundState || this.roundState.state !== 'flying') return;
 
-    const profit = Math.floor(data.amount * this.currentMultiplier - data.amount);
+    const betAmount = this.betAmounts.get(data.betId) || data.amount || 100;
+    const profit = Math.floor(betAmount * this.currentMultiplier - betAmount);
 
     this.emit('bet:cashout', {
       betId: data.betId,

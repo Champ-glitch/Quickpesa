@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { GameRound, Bet, RoundState } from '@/types';
+import type { GameRound, Bet } from '@/types';
 
 interface GameState {
   currentRound: GameRound | null;
@@ -20,7 +20,7 @@ interface GameState {
   clearMyBets: () => void;
 }
 
-export const useGameStore = create<GameState>((set, get) => ({
+export const useGameStore = create<GameState>((set) => ({
   currentRound: null,
   roundHistory: [],
   myBets: [],

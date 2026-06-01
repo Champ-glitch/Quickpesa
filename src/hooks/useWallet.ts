@@ -7,7 +7,7 @@ export const useWallet = () => {
   const { showToast, setShowDepositModal, setShowWithdrawModal } = useUIStore();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const deposit = async (amount: number, phone: string) => {
+  const deposit = async (amount: number, _phone: string) => {
     setIsProcessing(true);
 
     // Mock M-Pesa STK push
@@ -30,7 +30,7 @@ export const useWallet = () => {
     setIsProcessing(false);
   };
 
-  const withdraw = async (amount: number, phone: string) => {
+  const withdraw = async (amount: number, _phone: string) => {
     if (!user || user.balance < amount) {
       showToast('Insufficient balance', 'error');
       return;

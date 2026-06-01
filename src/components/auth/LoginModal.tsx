@@ -4,7 +4,7 @@ import { useUIStore } from '@/stores/uiStore';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import { mockUser } from '@/mocks/gameRounds';
-import { X, Phone, Lock, Eye, EyeOff } from 'lucide-react';
+import { X, Eye, EyeOff } from 'lucide-react';
 
 export const LoginModal = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -19,7 +19,7 @@ export const useCrashEngine = () => {
     elapsed: 0,
   });
 
-  const animRef = useRef<number>();
+  const animRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export const useCrashEngine = () => {
         isFlying: false,
         isCrashed: false,
         isBetting: true,
-        elapsed: countdown,
+        elapsed: countdown || 0,
       });
     } else if (currentRound.state === 'flying') {
       startTimeRef.current = Date.now();

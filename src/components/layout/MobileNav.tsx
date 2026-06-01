@@ -1,5 +1,5 @@
 import { useUIStore } from '@/stores/uiStore';
-import { Gamepad2, Wallet, User, Trophy } from 'lucide-react';
+import { Gamepad2, Wallet, User } from 'lucide-react';
 
 export const MobileNav = () => {
   const { activeTab, setActiveTab } = useUIStore();

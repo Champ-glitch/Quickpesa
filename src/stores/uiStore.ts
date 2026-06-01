@@ -1,5 +1,12 @@
 import { create } from 'zustand';
 
+type ToastType = 'success' | 'error' | 'info';
+
+interface ToastData {
+  message: string;
+  type: ToastType;
+}
+
 interface UIState {
   activeTab: 'game' | 'wallet' | 'profile' | 'history';
   showProvablyFair: boolean;
@@ -7,7 +14,7 @@ interface UIState {
   showLeaderboard: boolean;
   showDepositModal: boolean;
   showWithdrawModal: boolean;
-  toast: { message: string; type: 'success' | 'error' | 'info' } | null;
+  toast: ToastData | null;
 
   setActiveTab: (tab: UIState['activeTab']) => void;
   toggleProvablyFair: () => void;
@@ -15,7 +22,7 @@ interface UIState {
   toggleLeaderboard: () => void;
   setShowDepositModal: (show: boolean) => void;
   setShowWithdrawModal: (show: boolean) => void;
-  showToast: (message: string, type: UIState['toast']['type']) => void;
+  showToast: (message: string, type: ToastType) => void;
   clearToast: () => void;
 }
 

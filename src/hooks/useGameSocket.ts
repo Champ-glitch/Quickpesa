@@ -24,7 +24,7 @@ export const useGameSocket = () => {
   const { showToast } = useUIStore();
 
   useEffect(() => {
-    const socket = USE_MOCK ? mockSocket : null; // Real WS later
+    const socket = USE_MOCK ? mockSocket : null;
     socketRef.current = socket;
 
     if (socket) {

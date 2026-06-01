@@ -13,11 +13,11 @@ interface BetPanelProps {
 }
 
 const BetPanel = ({ panelId }: BetPanelProps) => {
-  const [amount, setAmount] = useState(GAME_CONFIG.DEFAULT_BET);
+  const [amount, setAmount] = useState<number>(GAME_CONFIG.DEFAULT_BET);
   const [autoCashout, setAutoCashout] = useState<number | null>(null);
   const [isAutoEnabled, setIsAutoEnabled] = useState(false);
 
-  const { currentRound, myBets, activeBets, countdown } = useGameStore();
+  const { currentRound, myBets, activeBets } = useGameStore();
   const { user } = useUserStore();
   const { placeBet, cashOut } = useGameSocket();
   const { showToast } = useUIStore();

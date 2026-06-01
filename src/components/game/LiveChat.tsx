@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { generateChatHistory } from '@/mocks/gameRounds';
-import { formatTimeAgo } from '@/utils/formatters';
 import { Send, Gift, MessageCircle } from 'lucide-react';
 import type { ChatMessage } from '@/types';
 

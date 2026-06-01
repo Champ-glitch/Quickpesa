@@ -1,6 +1,6 @@
-import { createHmac } from 'crypto';
-
 // Client-side provably fair verification
+// Uses Web Crypto API instead of Node.js crypto
+
 export const generateClientSeed = (): string => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -11,7 +11,7 @@ export const generateClientSeed = (): string => {
 };
 
 export const hashServerSeed = (serverSeed: string): string => {
-  // In real implementation, this uses SHA-256
+  // In real implementation, this uses SHA-256 via Web Crypto API
   // For mock, we simulate the hash
   return `hash_${serverSeed.slice(0, 16)}...`;
 };
@@ -22,11 +22,8 @@ export const calculateCrashPoint = (
   nonce: number,
   houseEdge: number = 0.03
 ): number => {
-  // HMAC-SHA256 of serverSeed + clientSeed + nonce
-  const message = `${clientSeed}:${nonce}`;
-  // In browser, we'd use Web Crypto API
-  // For this implementation, we use a deterministic mock
-  const combined = `${serverSeed}${message}`;
+  // Deterministic hash simulation for browser
+  const combined = `${serverSeed}:${clientSeed}:${nonce}`;
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
     const char = combined.charCodeAt(i);

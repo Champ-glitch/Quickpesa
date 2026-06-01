@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '@/stores/gameStore';
-import { formatKES, formatMultiplier, formatTimeAgo } from '@/utils/formatters';
-import { Trophy, Clock, User } from 'lucide-react';
+import { formatKES, formatMultiplier } from '@/utils/formatters';
+import { Trophy, User } from 'lucide-react';
 
 type TabType = 'my' | 'all';
 
