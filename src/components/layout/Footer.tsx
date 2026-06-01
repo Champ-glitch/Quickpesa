@@ -29,17 +29,8 @@ export const Footer = () => {
             © 2026 QuickPesa. All rights reserved.
           </p>
           <p className="text-[10px] text-qp-muted/50 flex items-center justify-center gap-1">
-            Built with <Heart className="w-3 h-3 text-red-400" /> by{' '}
-            <a 
-              href="https://www.linkedin.com/in/anthony-mwangangi-942144404" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-qp-primary hover:underline"
-            >
-              Anthony Mwangangi
-            </a>
+            Built with <Heart className="w-3 h-3 text-red-400" /> in Kenya
           </p>
-          <p className="text-[10px] text-qp-muted/30">Nairobi, Kenya</p>
         </div>
       </div>
     </footer>

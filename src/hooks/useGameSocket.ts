@@ -64,7 +64,7 @@ export const useGameSocket = () => {
       socket.on('round:end', (round: GameRound) => {
         updateRound({
           state: 'crashed',
-          currentMultiplier: round.crashPoint,
+          currentMultiplier: round.crashPoint ?? undefined,
           endTime: round.endTime,
         });
         addToHistory(round);
