@@ -2,13 +2,11 @@ import { type ReactNode } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
 
 interface ButtonProps {
   children: ReactNode;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   disabled?: boolean;
@@ -19,40 +17,24 @@ interface ButtonProps {
 }
 
 export const Button = ({
-  children,
-  variant = 'primary',
-  size = 'md',
-  fullWidth = false,
-  disabled = false,
-  loading = false,
-  onClick,
-  className,
-  type = 'button',
+  children, variant = 'primary', size = 'md', fullWidth = false,
+  disabled = false, loading = false, onClick, className, type = 'button',
 }: ButtonProps) => {
   const variants = {
-    primary: 'bg-qp-primary hover:bg-emerald-600 text-white',
-    secondary: 'bg-qp-card hover:bg-gray-700 text-qp-text border border-qp-border',
-    danger: 'bg-red-500 hover:bg-red-600 text-white',
-    ghost: 'hover:bg-white/5 text-qp-muted',
+    primary: 'bg-brand-green hover:bg-brand-greenDark text-white',
+    secondary: 'bg-dark-700 hover:bg-dark-600 text-white border border-dark-border',
+    danger: 'bg-brand-red hover:bg-red-600 text-white',
+    ghost: 'hover:bg-white/5 text-gray-400',
+    outline: 'border-2 border-brand-green text-brand-green hover:bg-brand-green/10',
   };
-
-  const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2.5 text-base',
-    lg: 'px-6 py-4 text-lg font-bold',
-  };
+  const sizes = { sm: 'px-3 py-1.5 text-sm', md: 'px-4 py-2.5 text-sm', lg: 'px-6 py-3.5 text-base font-bold' };
 
   return (
     <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled || loading}
+      type={type} onClick={onClick} disabled={disabled || loading}
       className={cn(
-        'rounded-lg font-medium transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed',
-        variants[variant],
-        sizes[size],
-        fullWidth && 'w-full',
-        className
+        'rounded-lg font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed',
+        variants[variant], sizes[size], fullWidth && 'w-full', className
       )}
     >
       {loading ? (
@@ -60,9 +42,7 @@ export const Button = ({
           <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           Loading...
         </span>
-      ) : (
-        children
-      )}
+      ) : children}
     </button>
   );
 };

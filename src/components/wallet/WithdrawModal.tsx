@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/userStore';
 import { useWallet } from '@/hooks/useWallet';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
-import { X, ArrowUpCircle, Wallet } from 'lucide-react';
+import { X, ArrowUpRight, Wallet } from 'lucide-react';
 
 export const WithdrawModal = () => {
   const { showWithdrawModal, setShowWithdrawModal } = useUIStore();
@@ -14,92 +14,45 @@ export const WithdrawModal = () => {
   const [phone, setPhone] = useState('2547');
 
   if (!showWithdrawModal) return null;
-
-  const maxAmount = user?.balance || 0;
+  const maxAmt = user?.balance || 0;
   const quickAmounts = [500, 1000, 2000, 5000];
 
   const handleWithdraw = () => {
     if (phone.length < 10) return;
-    if (amount > maxAmount) return;
+    if (amount > maxAmt) return;
     withdraw(amount, phone);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-qp-card border border-qp-border rounded-2xl w-full max-w-sm">
-        <div className="p-4 border-b border-qp-border flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ArrowUpCircle className="w-5 h-5 text-qp-accent" />
-            <h2 className="text-lg font-bold text-qp-text">Withdraw</h2>
-          </div>
-          <button
-            onClick={() => setShowWithdrawModal(false)}
-            className="text-qp-muted hover:text-qp-text"
-          >
-            <X className="w-5 h-5" />
-          </button>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="bg-dark-800 border border-dark-border rounded-t-2xl sm:rounded-2xl w-full max-w-sm">
+        <div className="p-4 border-b border-dark-border flex items-center justify-between">
+          <div className="flex items-center gap-2"><ArrowUpRight className="w-5 h-5 text-brand-orange" /><h2 className="text-base font-bold text-white">Withdraw</h2></div>
+          <button onClick={() => setShowWithdrawModal(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
-
         <div className="p-4 space-y-4">
-          {/* Balance */}
-          <div className="bg-qp-bg rounded-lg p-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-qp-primary" />
-              <span className="text-sm text-qp-muted">Available Balance</span>
-            </div>
-            <span className="text-lg font-bold font-mono text-qp-text">
-              KSh {maxAmount.toLocaleString()}
-            </span>
+          <div className="bg-dark-900 rounded-lg p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2"><Wallet className="w-4 h-4 text-brand-green" /><span className="text-xs text-gray-400">Available</span></div>
+            <span className="text-lg font-bold font-mono text-white">KSh {maxAmt.toLocaleString()}</span>
           </div>
-
-          {/* Amount */}
           <div>
-            <label className="text-sm font-medium text-qp-muted mb-2 block">Amount (KSh)</label>
-            <div className="relative mb-3">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-qp-muted font-bold">KSh</span>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full bg-qp-bg border border-qp-border rounded-lg pl-12 pr-4 py-3 text-lg font-bold font-mono text-qp-text focus:outline-none focus:border-qp-primary"
-                min={10}
-                max={maxAmount}
-              />
+            <label className="text-xs font-medium text-gray-400 mb-2 block">Amount (KSh)</label>
+            <div className="relative mb-2">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">KSh</span>
+              <input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))}
+                className="w-full bg-dark-900 border border-dark-border rounded-lg pl-12 pr-4 py-3 text-lg font-bold font-mono text-white focus:outline-none focus:border-brand-green" min={10} max={maxAmt} />
             </div>
-            <div className="grid grid-cols-4 gap-2">
-              {quickAmounts.map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => setAmount(Math.min(amt, maxAmount))}
-                  className={`py-2 rounded-lg text-sm font-medium transition-all ${
-                    amount === amt
-                      ? 'bg-qp-accent/20 text-qp-accent border border-qp-accent/30'
-                      : 'bg-qp-bg text-qp-muted border border-qp-border hover:text-qp-text'
-                  }`}
-                >
+            <div className="grid grid-cols-4 gap-1.5">
+              {quickAmounts.map(amt => (
+                <button key={amt} onClick={() => setAmount(Math.min(amt, maxAmt))}
+                  className={`py-2 rounded-lg text-xs font-medium transition-all ${amount === amt ? 'bg-brand-orange/20 text-brand-orange border border-brand-orange/30' : 'bg-dark-900 text-gray-500 border border-dark-border hover:text-gray-300'}`}>
                   {amt.toLocaleString()}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Phone */}
-          <Input
-            label="M-Pesa Number"
-            prefix="+"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="254712345678"
-          />
-
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            loading={isProcessing}
-            disabled={amount > maxAmount}
-            onClick={handleWithdraw}
-          >
+          <Input label="M-Pesa Number" prefix="+" value={phone} onChange={e => setPhone(e.target.value)} placeholder="254712345678" />
+          <Button variant="primary" size="lg" fullWidth loading={isProcessing} disabled={amount > maxAmt} onClick={handleWithdraw}>
             {isProcessing ? 'Processing...' : `Withdraw KSh ${amount.toLocaleString()}`}
           </Button>
         </div>

@@ -3,101 +3,54 @@ import { useGameStore } from '@/stores/gameStore';
 import { formatKES, formatMultiplier } from '@/utils/formatters';
 import { Trophy, User } from 'lucide-react';
 
-type TabType = 'my' | 'all';
+type Tab = 'my' | 'all';
 
 export const BetHistory = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('my');
+  const [tab, setTab] = useState<Tab>('my');
   const { myBets, activeBets } = useGameStore();
-
-  const allBets = [...activeBets, ...myBets].slice(0, 20);
-  const displayBets = activeTab === 'my' ? myBets : allBets;
+  const all = [...activeBets, ...myBets].slice(0, 20);
+  const display = tab === 'my' ? myBets : all;
 
   return (
-    <div className="bg-qp-card rounded-xl border border-qp-border overflow-hidden">
-      {/* Tabs */}
-      <div className="flex border-b border-qp-border">
-        <button
-          onClick={() => setActiveTab('my')}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'my'
-              ? 'text-qp-primary border-b-2 border-qp-primary'
-              : 'text-qp-muted hover:text-qp-text'
-          }`}
-        >
-          <User className="w-4 h-4 inline mr-1.5" />
-          My Bets
+    <div className="bg-dark-800 rounded-xl border border-dark-border overflow-hidden">
+      <div className="flex border-b border-dark-border">
+        <button onClick={() => setTab('my')}
+          className={`flex-1 py-2.5 text-xs font-medium transition-colors ${tab === 'my' ? 'text-brand-green border-b-2 border-brand-green' : 'text-gray-500 hover:text-gray-300'}`}>
+          <User className="w-3.5 h-3.5 inline mr-1" /> My Bets
         </button>
-        <button
-          onClick={() => setActiveTab('all')}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'all'
-              ? 'text-qp-primary border-b-2 border-qp-primary'
-              : 'text-qp-muted hover:text-qp-text'
-          }`}
-        >
-          <Trophy className="w-4 h-4 inline mr-1.5" />
-          All Players
+        <button onClick={() => setTab('all')}
+          className={`flex-1 py-2.5 text-xs font-medium transition-colors ${tab === 'all' ? 'text-brand-green border-b-2 border-brand-green' : 'text-gray-500 hover:text-gray-300'}`}>
+          <Trophy className="w-3.5 h-3.5 inline mr-1" /> All
         </button>
       </div>
-
-      {/* Table */}
-      <div className="max-h-64 overflow-y-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-qp-bg/50 sticky top-0">
-            <tr className="text-qp-muted text-xs">
-              <th className="text-left py-2 px-3">User</th>
-              <th className="text-right py-2 px-3">Bet</th>
-              <th className="text-right py-2 px-3">@</th>
-              <th className="text-right py-2 px-3">Profit</th>
+      <div className="max-h-52 overflow-y-auto">
+        <table className="w-full text-xs">
+          <thead className="bg-dark-900/50 sticky top-0">
+            <tr className="text-gray-500">
+              <th className="text-left py-1.5 px-2.5">User</th>
+              <th className="text-right py-1.5 px-2.5">Bet</th>
+              <th className="text-right py-1.5 px-2.5">@</th>
+              <th className="text-right py-1.5 px-2.5">Profit</th>
             </tr>
           </thead>
           <tbody>
-            {displayBets.length === 0 && (
-              <tr>
-                <td colSpan={4} className="text-center py-8 text-qp-muted text-xs">
-                  No bets yet
-                </td>
-              </tr>
+            {display.length === 0 && (
+              <tr><td colSpan={4} className="text-center py-6 text-gray-600 text-xs">No bets yet</td></tr>
             )}
-            {displayBets.map((bet) => (
-              <tr
-                key={bet.id}
-                className={`border-b border-qp-border/50 transition-colors ${
-                  bet.status === 'cashed_out' ? 'bg-green-500/5' : ''
-                }`}
-              >
-                <td className="py-2 px-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-qp-primary/20 flex items-center justify-center text-xs font-bold text-qp-primary">
-                      {bet.username[0]}
-                    </div>
-                    <span className="text-qp-text text-xs truncate max-w-[80px]">
-                      {bet.username}
-                    </span>
+            {display.map(bet => (
+              <tr key={bet.id} className={`border-b border-dark-border/40 ${bet.status === 'cashed_out' ? 'bg-green-500/5' : ''}`}>
+                <td className="py-1.5 px-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-5 rounded-full bg-brand-green/20 flex items-center justify-center text-[10px] font-bold text-brand-green">{bet.username[0]}</div>
+                    <span className="text-gray-300 text-[11px] truncate max-w-[70px]">{bet.username}</span>
                   </div>
                 </td>
-                <td className="text-right py-2 px-3 font-mono text-qp-text">
-                  {formatKES(bet.amount)}
+                <td className="text-right py-1.5 px-2.5 font-mono text-gray-300 text-[11px]">{formatKES(bet.amount)}</td>
+                <td className="text-right py-1.5 px-2.5">
+                  {bet.cashoutMultiplier ? <span className="font-mono font-bold text-brand-green text-[11px]">{formatMultiplier(bet.cashoutMultiplier)}</span> : <span className="text-gray-600">—</span>}
                 </td>
-                <td className="text-right py-2 px-3">
-                  {bet.cashoutMultiplier ? (
-                    <span className="font-mono font-bold text-qp-primary">
-                      {formatMultiplier(bet.cashoutMultiplier)}
-                    </span>
-                  ) : (
-                    <span className="text-qp-muted">—</span>
-                  )}
-                </td>
-                <td className="text-right py-2 px-3">
-                  {bet.profit !== null ? (
-                    <span className={`font-mono font-bold ${
-                      bet.profit > 0 ? 'text-qp-primary' : 'text-red-400'
-                    }`}>
-                      {bet.profit > 0 ? '+' : ''}{formatKES(bet.profit)}
-                    </span>
-                  ) : (
-                    <span className="text-qp-muted">—</span>
-                  )}
+                <td className="text-right py-1.5 px-2.5">
+                  {bet.profit !== null ? <span className={`font-mono font-bold text-[11px] ${bet.profit > 0 ? 'text-brand-green' : 'text-brand-red'}`}>{bet.profit > 0 ? '+' : ''}{formatKES(bet.profit)}</span> : <span className="text-gray-600">—</span>}
                 </td>
               </tr>
             ))}

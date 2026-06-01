@@ -1,37 +1,22 @@
-import { Shield, Heart } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 export const Footer = () => {
   return (
-    <footer className="bg-qp-card border-t border-qp-border mt-8">
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-        {/* Responsible gambling */}
-        <div className="bg-qp-bg rounded-lg p-3 flex items-start gap-3">
-          <Shield className="w-4 h-4 text-qp-accent mt-0.5 flex-shrink-0" />
+    <footer className="bg-dark-800 border-t border-dark-border mt-6">
+      <div className="max-w-md mx-auto px-3 py-4 space-y-3">
+        <div className="bg-dark-900 rounded-lg p-2.5 flex items-start gap-2">
+          <Shield className="w-3.5 h-3.5 text-brand-orange mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-xs font-semibold text-qp-text">Play Responsibly</p>
-            <p className="text-xs text-qp-muted mt-0.5">
-              Gambling can be addictive. Please play responsibly. 18+ only.
-            </p>
+            <p className="text-[11px] font-semibold text-white">Play Responsibly</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">Gambling can be addictive. 18+ only.</p>
           </div>
         </div>
-
-        {/* Links */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center">
-          <a href="#" className="text-xs text-qp-muted hover:text-qp-text transition-colors">Terms</a>
-          <a href="#" className="text-xs text-qp-muted hover:text-qp-text transition-colors">Privacy</a>
-          <a href="#" className="text-xs text-qp-muted hover:text-qp-text transition-colors">Responsible Gaming</a>
-          <a href="#" className="text-xs text-qp-muted hover:text-qp-text transition-colors">Support</a>
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 justify-center">
+          {['Terms', 'Privacy', 'Responsible Gaming', 'Support'].map(link => (
+            <a key={link} href="#" className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors">{link}</a>
+          ))}
         </div>
-
-        {/* Copyright */}
-        <div className="text-center space-y-1">
-          <p className="text-xs text-qp-muted">
-            © 2026 QuickPesa. All rights reserved.
-          </p>
-          <p className="text-[10px] text-qp-muted/50 flex items-center justify-center gap-1">
-            Built with <Heart className="w-3 h-3 text-red-400" /> in Kenya
-          </p>
-        </div>
+        <p className="text-[10px] text-gray-600 text-center">© 2026 QuickPesa. All rights reserved.</p>
       </div>
     </footer>
   );

@@ -12,25 +12,17 @@ function App() {
 
   const renderPage = () => {
     switch (activeTab) {
-      case 'game':
-        return <GamePage />;
-      case 'wallet':
-        return <WalletPage />;
-      case 'profile':
-        return <ProfilePage />;
-      default:
-        return <GamePage />;
+      case 'game': return <GamePage />;
+      case 'wallet': return <WalletPage />;
+      case 'profile': return <ProfilePage />;
+      default: return <GamePage />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-qp-bg">
+    <div className="min-h-screen bg-dark-900">
       <Navbar />
-
-      <main className="max-w-lg mx-auto px-4 pt-4">
-        {renderPage()}
-      </main>
-
+      <main className="max-w-md mx-auto px-3 pt-3">{renderPage()}</main>
       <Footer />
       <MobileNav />
       <Toast />

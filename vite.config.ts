@@ -11,9 +11,9 @@ export default defineConfig({
       manifest: {
         name: 'QuickPesa',
         short_name: 'QuickPesa',
-        description: "Kenya's fastest crash game",
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        description: 'Kenya fastest crash game',
+        theme_color: '#0a0e1a',
+        background_color: '#0a0e1a',
         display: 'standalone',
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },

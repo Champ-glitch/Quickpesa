@@ -1,10 +1,10 @@
-export type RoundState = 'betting' | 'flying' | 'crashed' | 'settling';
+export type RoundState = 'betting' | 'flying' | 'crashed';
 
 export interface GameRound {
   id: string;
   roundNumber: number;
   state: RoundState;
-  crashPoint: number | null;
+  crashPoint: number;
   currentMultiplier: number;
   startTime: number;
   endTime: number | null;
@@ -30,11 +30,11 @@ export interface Bet {
 export interface User {
   id: string;
   phone: string;
+  email: string;
   username: string;
   balance: number;
   totalWagered: number;
   totalWon: number;
-  avatar?: string;
   isVerified: boolean;
   createdAt: string;
 }
@@ -45,7 +45,7 @@ export interface Transaction {
   type: 'deposit' | 'withdrawal' | 'bet' | 'win' | 'bonus';
   amount: number;
   status: 'pending' | 'completed' | 'failed';
-  method: 'mpesa' | 'airtel' | 'crypto' | 'internal';
+  method: 'mpesa' | 'airtel' | 'bank' | 'crypto' | 'internal';
   reference?: string;
   createdAt: string;
 }
@@ -61,18 +61,13 @@ export interface ChatMessage {
   createdAt: number;
 }
 
-export interface LeaderboardEntry {
-  rank: number;
-  username: string;
-  amount: number;
-  multiplier: number;
-  avatar?: string;
-}
-
-export interface ProvablyFairData {
-  serverSeedHash: string;
-  serverSeed: string | null;
-  clientSeed: string;
-  nonce: number;
-  crashPoint: number | null;
+export interface DepositChannel {
+  id: string;
+  name: string;
+  icon: string;
+  minAmount: number;
+  maxAmount: number;
+  processingTime: string;
+  fee: string;
+  active: boolean;
 }

@@ -5,61 +5,40 @@ import { ArrowDownLeft, ArrowUpRight, Gamepad2, Gift, Clock, CheckCircle } from 
 
 export const TransactionHistory = () => {
   const { transactions } = useUserStore();
-  const allTransactions = transactions.length > 0 ? transactions : mockTransactions;
+  const all = transactions.length > 0 ? transactions : mockTransactions;
 
   const getIcon = (type: string) => {
-    switch (type) {
-      case 'deposit': return <ArrowDownLeft className="w-4 h-4 text-qp-primary" />;
-      case 'withdrawal': return <ArrowUpRight className="w-4 h-4 text-qp-accent" />;
-      case 'bet': return <Gamepad2 className="w-4 h-4 text-red-400" />;
-      case 'win': return <Gift className="w-4 h-4 text-qp-primary" />;
-      case 'bonus': return <Gift className="w-4 h-4 text-qp-accent" />;
-      default: return <Clock className="w-4 h-4 text-qp-muted" />;
+    switch(type) {
+      case 'deposit': return <ArrowDownLeft className="w-3.5 h-3.5 text-brand-green" />;
+      case 'withdrawal': return <ArrowUpRight className="w-3.5 h-3.5 text-brand-orange" />;
+      case 'bet': return <Gamepad2 className="w-3.5 h-3.5 text-brand-red" />;
+      case 'win': return <Gift className="w-3.5 h-3.5 text-brand-green" />;
+      default: return <Clock className="w-3.5 h-3.5 text-gray-500" />;
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    if (status === 'completed') return <CheckCircle className="w-3 h-3 text-green-400" />;
-    if (status === 'pending') return <Clock className="w-3 h-3 text-qp-accent" />;
-    return <Clock className="w-3 h-3 text-red-400" />;
-  };
-
   return (
-    <div className="bg-qp-card rounded-xl border border-qp-border overflow-hidden">
-      <div className="p-3 border-b border-qp-border">
-        <h3 className="text-sm font-semibold text-qp-text">Transaction History</h3>
-      </div>
-      <div className="max-h-80 overflow-y-auto">
-        {allTransactions.length === 0 ? (
-          <div className="text-center py-8 text-qp-muted text-sm">
-            No transactions yet
-          </div>
-        ) : (
-          <div className="divide-y divide-qp-border/50">
-            {allTransactions.map((tx) => (
-              <div key={tx.id} className="p-3 flex items-center gap-3 hover:bg-qp-bg/30 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-qp-bg flex items-center justify-center flex-shrink-0">
-                  {getIcon(tx.type)}
-                </div>
+    <div className="bg-dark-800 rounded-xl border border-dark-border overflow-hidden">
+      <div className="p-3 border-b border-dark-border"><h3 className="text-xs font-semibold text-gray-400">Transaction History</h3></div>
+      <div className="max-h-72 overflow-y-auto">
+        {all.length === 0 ? <div className="text-center py-8 text-gray-600 text-sm">No transactions yet</div> : (
+          <div className="divide-y divide-dark-border/40">
+            {all.map(tx => (
+              <div key={tx.id} className="p-3 flex items-center gap-3 hover:bg-dark-900/30">
+                <div className="w-7 h-7 rounded-full bg-dark-900 flex items-center justify-center flex-shrink-0">{getIcon(tx.type)}</div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-qp-text capitalize">{tx.type}</span>
-                    <span className={`text-sm font-bold font-mono ${
-                      tx.amount > 0 ? 'text-qp-primary' : 'text-qp-text'
-                    }`}>
-                      {tx.amount > 0 ? '+' : ''}{formatKES(Math.abs(tx.amount))}
-                    </span>
+                    <span className="text-xs font-medium text-white capitalize">{tx.type}</span>
+                    <span className={`text-xs font-bold font-mono ${tx.amount > 0 ? 'text-brand-green' : 'text-white'}`}>{tx.amount > 0 ? '+' : ''}{formatKES(Math.abs(tx.amount))}</span>
                   </div>
                   <div className="flex items-center justify-between mt-0.5">
-                    <span className="text-xs text-qp-muted">{tx.createdAt}</span>
+                    <span className="text-[10px] text-gray-500">{tx.createdAt}</span>
                     <div className="flex items-center gap-1">
-                      {getStatusIcon(tx.status)}
-                      <span className="text-xs text-qp-muted capitalize">{tx.status}</span>
+                      {tx.status === 'completed' ? <CheckCircle className="w-2.5 h-2.5 text-green-400" /> : <Clock className="w-2.5 h-2.5 text-brand-orange" />}
+                      <span className="text-[10px] text-gray-500 capitalize">{tx.status}</span>
                     </div>
                   </div>
-                  {tx.reference && (
-                    <span className="text-[10px] text-qp-muted/50 font-mono">Ref: {tx.reference}</span>
-                  )}
+                  {tx.reference && <span className="text-[9px] text-gray-600 font-mono">Ref: {tx.reference}</span>}
                 </div>
               </div>
             ))}

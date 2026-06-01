@@ -6,160 +6,125 @@ import { formatMultiplier, getMultiplierColor } from '@/utils/formatters';
 export const CrashGraph = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { currentRound } = useGameStore();
-  const { multiplier, isFlying, isCrashed, isBetting, elapsed } = useCrashEngine();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const { multiplier, isFlying, isCrashed, isBetting } = useCrashEngine();
+  const [dims, setDims] = useState({ w: 0, h: 0 });
 
-  // Responsive canvas
   useEffect(() => {
-    const updateDimensions = () => {
-      const container = canvasRef.current?.parentElement;
-      if (container) {
-        setDimensions({
-          width: container.clientWidth,
-          height: container.clientHeight,
-        });
-      }
+    const update = () => {
+      const c = canvasRef.current?.parentElement;
+      if (c) setDims({ w: c.clientWidth, h: c.clientHeight });
     };
-
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, []);
 
-  // Draw the crash curve
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || dimensions.width === 0) return;
-
-    const ctx = canvas.getContext('2d');
+    const c = canvasRef.current;
+    if (!c || dims.w === 0) return;
+    const ctx = c.getContext('2d');
     if (!ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = dimensions.width * dpr;
-    canvas.height = dimensions.height * dpr;
+    c.width = dims.w * dpr; c.height = dims.h * dpr;
     ctx.scale(dpr, dpr);
-
-    const w = dimensions.width;
-    const h = dimensions.height;
-
-    // Clear
+    const w = dims.w, h = dims.h;
     ctx.clearRect(0, 0, w, h);
 
-    // Background grid
-    ctx.strokeStyle = 'rgba(31, 41, 55, 0.5)';
+    // Background
+    ctx.fillStyle = '#0a0e1a';
+    ctx.fillRect(0, 0, w, h);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(42, 52, 65, 0.5)';
     ctx.lineWidth = 1;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 1; i < 5; i++) {
       const y = (h / 5) * i;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+    for (let i = 1; i < 6; i++) {
+      const x = (w / 6) * i;
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
     }
 
     if (isBetting) {
-      // Waiting state
-      ctx.fillStyle = '#10b981';
-      ctx.font = 'bold 48px JetBrains Mono';
+      ctx.fillStyle = '#22c55e';
+      ctx.font = 'bold 28px JetBrains Mono';
       ctx.textAlign = 'center';
-      ctx.fillText('PLACE YOUR BETS', w / 2, h / 2 - 20);
-
-      ctx.font = '24px JetBrains Mono';
-      ctx.fillStyle = '#9ca3af';
-      ctx.fillText(`Starting in ${elapsed}s`, w / 2, h / 2 + 30);
+      ctx.fillText('WAITING FOR NEXT ROUND', w / 2, h / 2 - 10);
+      ctx.font = '16px Inter';
+      ctx.fillStyle = '#6b7280';
+      ctx.fillText('Place your bets', w / 2, h / 2 + 25);
       return;
     }
 
     if (isFlying || isCrashed) {
-      // Draw the curve
-      const points: { x: number; y: number }[] = [];
-      const maxTime = Math.max(elapsed, 1);
+      const points: {x:number,y:number}[] = [];
+      const maxTime = Math.max(multiplier, 1);
       const maxMult = Math.max(multiplier, 2);
 
-      for (let t = 0; t <= elapsed; t += 0.016) {
+      for (let t = 0; t <= multiplier; t += 0.05) {
         const progress = t / maxTime;
-        const x = progress * w * 0.85;
+        const x = Math.min(progress * w * 0.9, w - 20);
         const curveMult = Math.pow(1.02 + t * 0.008, t) + t * 0.05;
-        const y = h - (curveMult / maxMult) * h * 0.8;
-
-        if (y > 0 && y < h) {
-          points.push({ x, y });
-        }
+        const y = Math.max(20, h - (curveMult / maxMult) * h * 0.75);
+        if (y > 0 && y < h) points.push({ x, y });
       }
 
       if (points.length > 1) {
-        // Glow effect
-        ctx.shadowColor = isCrashed ? '#ef4444' : '#10b981';
-        ctx.shadowBlur = 20;
-
-        // Curve line
-        ctx.strokeStyle = isCrashed ? '#ef4444' : '#10b981';
+        // Glow
+        ctx.shadowColor = isCrashed ? '#ef4444' : '#22c55e';
+        ctx.shadowBlur = 15;
+        ctx.strokeStyle = isCrashed ? '#ef4444' : '#22c55e';
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
-
-        for (let i = 1; i < points.length; i++) {
-          ctx.lineTo(points[i].x, points[i].y);
-        }
+        for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
         ctx.stroke();
-
         ctx.shadowBlur = 0;
 
-        // Fill under curve
-        ctx.fillStyle = isCrashed 
-          ? 'rgba(239, 68, 68, 0.1)' 
-          : 'rgba(16, 185, 129, 0.1)';
+        // Fill under
+        ctx.fillStyle = isCrashed ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)';
         ctx.beginPath();
         ctx.moveTo(points[0].x, h);
         for (const p of points) ctx.lineTo(p.x, p.y);
-        ctx.lineTo(points[points.length - 1].x, h);
-        ctx.closePath();
-        ctx.fill();
+        ctx.lineTo(points[points.length-1].x, h);
+        ctx.closePath(); ctx.fill();
 
-        // Current point dot
-        const lastPoint = points[points.length - 1];
-        ctx.fillStyle = isCrashed ? '#ef4444' : '#10b981';
-        ctx.beginPath();
-        ctx.arc(lastPoint.x, lastPoint.y, 6, 0, Math.PI * 2);
-        ctx.fill();
+        // Dot
+        const last = points[points.length-1];
+        ctx.fillStyle = isCrashed ? '#ef4444' : '#22c55e';
+        ctx.beginPath(); ctx.arc(last.x, last.y, 5, 0, Math.PI*2); ctx.fill();
       }
     }
 
     if (isCrashed && currentRound?.crashPoint) {
       ctx.fillStyle = '#ef4444';
-      ctx.font = 'bold 64px JetBrains Mono';
+      ctx.font = 'bold 48px JetBrains Mono';
       ctx.textAlign = 'center';
-      ctx.fillText(`CRASHED`, w / 2, h / 2 - 20);
-
-      ctx.font = 'bold 36px JetBrains Mono';
-      ctx.fillText(`@ ${currentRound.crashPoint.toFixed(2)}x`, w / 2, h / 2 + 40);
+      ctx.fillText('FLEW AWAY', w / 2, h / 2 - 15);
+      ctx.font = 'bold 28px JetBrains Mono';
+      ctx.fillText(`@ ${currentRound.crashPoint.toFixed(2)}x`, w / 2, h / 2 + 30);
     }
-  }, [dimensions, multiplier, isFlying, isCrashed, isBetting, elapsed, currentRound]);
+  }, [dims, multiplier, isFlying, isCrashed, isBetting, currentRound]);
 
   return (
-    <div className="relative w-full aspect-[4/3] bg-qp-card rounded-2xl overflow-hidden border border-qp-border">
-      {/* Multiplier overlay */}
+    <div className="relative w-full bg-dark-900 rounded-xl overflow-hidden border border-dark-border" style={{ aspectRatio: '16/10' }}>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         {(isFlying || isCrashed) && (
           <div className={`text-center ${isCrashed ? 'animate-crash-shake' : ''}`}>
-            <span className={`text-6xl font-bold font-mono ${getMultiplierColor(multiplier)}`}>
+            <span className={`text-5xl font-bold font-mono ${getMultiplierColor(multiplier)}`}>
               {formatMultiplier(multiplier)}
             </span>
           </div>
         )}
       </div>
-
-      <canvas
-        ref={canvasRef}
-        style={{ width: dimensions.width, height: dimensions.height }}
-        className="absolute inset-0"
-      />
-
-      {/* Server seed hash */}
+      <canvas ref={canvasRef} style={{ width: dims.w, height: dims.h }} className="absolute inset-0" />
       {currentRound?.serverSeedHash && (
-        <div className="absolute bottom-2 left-2 right-2 flex justify-between text-[10px] text-qp-muted/50">
-          <span className="font-mono truncate">Hash: {currentRound.serverSeedHash}</span>
-          <span className="font-mono">#{currentRound.roundNumber}</span>
+        <div className="absolute bottom-1 left-2 right-2 flex justify-between text-[9px] text-gray-600 font-mono">
+          <span className="truncate">Hash: {currentRound.serverSeedHash}</span>
+          <span>#{currentRound.roundNumber}</span>
         </div>
       )}
     </div>

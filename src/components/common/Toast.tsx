@@ -19,7 +19,6 @@ export const Toast = () => {
     error: <XCircle className="w-5 h-5 text-red-400" />,
     info: <Info className="w-5 h-5 text-blue-400" />,
   };
-
   const bgColors = {
     success: 'bg-green-500/10 border-green-500/30',
     error: 'bg-red-500/10 border-red-500/30',
@@ -30,7 +29,7 @@ export const Toast = () => {
     <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-slide-up">
       <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${bgColors[toast.type]} backdrop-blur-sm`}>
         {icons[toast.type]}
-        <span className="text-sm font-medium">{toast.message}</span>
+        <span className="text-sm font-medium text-white">{toast.message}</span>
       </div>
     </div>
   );
