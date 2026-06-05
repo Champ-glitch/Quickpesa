@@ -25,24 +25,45 @@ export const useGameSocket = () => {
     if (USE_MOCK) {
       socket = mockSocket;
       socket.connect();
-    } else {
-      const token = localStorage.getItem('qp_token');
-      socket = io(WS_URL, {
-        auth: { token },
-        transports: ['websocket', 'polling'],
-        reconnection: true,
-        reconnectionAttempts: 10,
-        reconnectionDelay: 2000,
-      });
+      socketRef.current = socket;
+      setupListeners(socket);
+      return () => socket.disconnect();
     }
 
-    socketRef.current = socket;
+    const token = localStorage.getItem('qp_token');
 
-    socket.on('connect', () => setConnected(true));
+    // Don't connect socket if not logged in
+    if (!token) return;
+
+    socket = io(WS_URL, {
+      auth: { token },
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 20,
+      reconnectionDelay: 3000,
+      reconnectionDelayMax: 10000,
+      timeout: 60000, // 60s timeout for slow Render wakeup
+    });
+
+    socketRef.current = socket;
+    setupListeners(socket);
+
+    return () => { socket.disconnect(); };
+  }, []);
+
+  function setupListeners(socket: any) {
+    socket.on('connect', () => {
+      setConnected(true);
+      console.log('✅ Connected to game server');
+    });
 
     socket.on('disconnect', () => {
       setConnected(false);
-      showToast('Connection lost, reconnecting...', 'error');
+    });
+
+    socket.on('connect_error', (err: any) => {
+      console.warn('Socket reconnecting...', err.message);
+      // Don't crash — just keep reconnecting silently
     });
 
     socket.on('round:start', (round: GameRound) => {
@@ -82,9 +103,7 @@ export const useGameSocket = () => {
     });
 
     socket.on('error', (data: { message: string }) => showToast(data.message, 'error'));
-
-    return () => socket.disconnect();
-  }, []);
+  }
 
   const placeBet = useCallback((amount: number, autoCashout?: number) => {
     if (USE_MOCK) socketRef.current?.send('bet:place', { amount, autoCashout });
